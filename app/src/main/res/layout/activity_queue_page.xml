@@ -1,0 +1,59 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:background="@drawable/secondarybg"
+    tools:context="com.example.benjamin.sierra.QueuePage">
+
+    <Button
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        android:text="@string/cancel_button"
+        android:id="@+id/cancel_button"
+        android:background="@drawable/drinkbg"
+        android:layout_marginBottom="28dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/drink_cancel"
+        android:id="@+id/txtLvSelect"
+        android:layout_above="@+id/cancel_button"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/queue_welcome"
+        android:id="@+id/queue_welcome"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/queue_select"
+        android:id="@+id/queue_select"
+        android:layout_below="@+id/queue_welcome"
+        android:layout_centerHorizontal="true" />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/lvQueue"
+        android:layout_alignLeft="@+id/queue_select"
+        android:layout_alignStart="@+id/queue_select"
+        android:layout_below="@+id/queue_select"
+        android:layout_above="@+id/txtLvSelect"
+        android:choiceMode="singleChoice"
+        android:headerDividersEnabled="false" />
+
+</RelativeLayout>

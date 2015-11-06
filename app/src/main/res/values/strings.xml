@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Sierra</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="make_drink">Make Drink</string>
+    <string name="queue">My Queue</string>
+    <string name="frontimage">Main page image</string>
+    <string name="welcome">Welcome to Drink Mixer</string>
+    <string name="front_instruct">Select an option to get started</string>
+    <string name="title_activity_drinklist">DrinkList</string>
+    <string name="drink_list_welcome">Please select a drink</string>
+    <string name="drink1">Drink 1</string>
+    <string name="drink2">Drink 2</string>
+    <string name="drink3">Drink 3</string>
+    <string name="drink4">Drink 4</string>
+    <string name="drink5">Drink 5</string>
+    <string name="LoadingInitalText">Loading...</string>
+    <string name="OrderDrink">Place Order</string>
+    <string name="CancelDrink">Cancel Order</string>
+    <string name="title_activity_queue_page">Queue_Page</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="drink_cancel">Cancel this drink</string>
+    <string name="queue_welcome">This is your drink queue</string>
+    <string name="queue_select">Select a drink to cancel it from the queue</string>
+
+</resources>
