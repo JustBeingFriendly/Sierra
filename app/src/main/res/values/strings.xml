@@ -22,5 +22,6 @@
     <string name="drink_cancel">Cancel this drink</string>
     <string name="queue_welcome">This is your drink queue</string>
     <string name="queue_select">Select a drink to cancel it from the queue</string>
+    <string name="Success">Success</string>
 
 </resources>

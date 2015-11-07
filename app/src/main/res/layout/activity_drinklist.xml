@@ -95,7 +95,7 @@
         android:id="@+id/txtDrinkOrder"
         android:layout_below="@+id/btnDrink5"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="49dp" />
+        android:layout_marginTop="32dp" />
 
     <Button
         android:layout_width="200dp"
@@ -106,5 +106,20 @@
         android:layout_alignTop="@+id/btnOrder"
         android:layout_toRightOf="@+id/btnOrder"
         android:layout_toEndOf="@+id/btnOrder" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/Success"
+        android:id="@+id/txtSuccess"
+        android:textColor="#FFFFFF"
+        android:shadowColor="#000000"
+        android:shadowDx="0.0"
+        android:shadowDy="0.0"
+        android:shadowRadius="10.0"
+        android:layout_marginBottom="30dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

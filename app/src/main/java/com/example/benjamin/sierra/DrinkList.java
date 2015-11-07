@@ -27,7 +27,7 @@ public class DrinkList extends AppCompatActivity {
     final String drinksListURL = "http://192.168.0.107:8081/drinksList";
     final String orderDrinkURL = "http://192.168.0.107:8081/chooseDrink";
 
-    protected Animation fadeIn, fadeOut, fadeOutPreventOrder, orderFadeIn;
+    protected Animation fadeIn, fadeOut, fadeInOut;//, fadeOutPreventOrder, orderFadeIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +38,12 @@ public class DrinkList extends AppCompatActivity {
         getListOfDrinks.execute(drinksListURL);
         setAnimationParameters();
 
+        TextView tvSuccess = (TextView)findViewById(R.id.txtSuccess);
+        tvSuccess.setVisibility(View.GONE);
+        Button btnOrder = (Button)findViewById(R.id.btnOrder);
+        Button btnCancel = (Button)findViewById(R.id.btnCancel);
+        btnOrder.setVisibility(View.GONE);
+        btnCancel.setVisibility(View.GONE);
     }
 
     @Override
@@ -58,7 +64,6 @@ public class DrinkList extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -71,15 +76,27 @@ public class DrinkList extends AppCompatActivity {
         fadeIn.setDuration(400);
         fadeIn.setFillAfter(true);
 
-        fadeOutPreventOrder = new AlphaAnimation(1.0f, 0.0f);
-        fadeOutPreventOrder.setDuration(500);
-        fadeOutPreventOrder.setFillAfter(true);
+        fadeInOut = new AlphaAnimation(0.0f, 1.0f);
+        fadeInOut.setDuration(1000);
+        fadeInOut.setFillAfter(true);
+        fadeInOut.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                TextView tvSuccess = (TextView)findViewById(R.id.txtSuccess);
+                tvSuccess.startAnimation(fadeOut);
+            }
 
-        orderFadeIn = new AlphaAnimation(0.0f, 1.0f);
-        orderFadeIn.setDuration(400);
-        orderFadeIn.setFillAfter(true);
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
     }
-
 
     //Sends a get request to the web server which returns the list of drinks in the database
     protected class GetListOfDrinks extends AsyncTask<String, Void, String> {
@@ -124,11 +141,6 @@ public class DrinkList extends AppCompatActivity {
             if (!result.isEmpty()){
                 cleanOutputFromListOfDrinks(result);
             }
-            else{
-                //listOfDrinks = "Error Loading web page"; //Sets the button text to an error message
-                //parentActivityWkRf.placeOrderText.setText("Please start web server");
-            }
-
         }
     }
 
@@ -157,10 +169,14 @@ public class DrinkList extends AppCompatActivity {
 
         final TextView tv = (TextView) findViewById(R.id.txtDrinkOrder);
 
-        Button btnCancel = (Button)findViewById(R.id.btnCancel);
+        final Button btnCancel = (Button)findViewById(R.id.btnCancel);
         btnCancel.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-                fadeOutPreventOrder.setAnimationListener(new Animation.AnimationListener() {
+                Button btnOrder = (Button)findViewById(R.id.btnOrder);
+                btnOrder.setVisibility(View.GONE);
+                btnCancel.setVisibility(View.GONE);
+                tv.setText("");
+                /*fadeOutPreventOrder.setAnimationListener(new Animation.AnimationListener() {
                     @Override
                     public void onAnimationStart(Animation animation) {
 
@@ -175,22 +191,24 @@ public class DrinkList extends AppCompatActivity {
                     public void onAnimationRepeat(Animation animation) {
 
                     }
-                });
-                if(fadeOutPreventOrder.hasEnded() || !fadeOutPreventOrder.hasStarted())
-                    tv.startAnimation(fadeOutPreventOrder);
+                });*/
+                /*if(fadeOutPreventOrder.hasEnded() || !fadeOutPreventOrder.hasStarted())
+                    tv.startAnimation(fadeOutPreventOrder);*/
 
             }
         });
 
-        final Button btnPlaceOrder = (Button)findViewById(R.id.btnOrder);
-        btnPlaceOrder.setOnClickListener(new Button.OnClickListener() {
+
+       // TextView tvSuccess = (TextView)findViewById(R.id.txtSuccess);
+
+
+
+        final Button btnOrder = (Button)findViewById(R.id.btnOrder);
+        btnOrder.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-                boolean outEnd = fadeOutPreventOrder.hasEnded();
-                if(!fadeOutPreventOrder.hasStarted()) {
-                    commitOrder();
-                    tv.startAnimation(fadeOutPreventOrder);
-                    btnPlaceOrder.startAnimation(fadeOutPreventOrder);
-                }
+                btnOrder.setVisibility(View.GONE);
+                btnCancel.setVisibility(View.GONE);
+                commitOrder();
             }
         });
 
@@ -212,9 +230,10 @@ public class DrinkList extends AppCompatActivity {
                new Button.OnClickListener() {
                     public void onClick(View v) {
                         tv.setText(b.getText().toString());
-                        tv.startAnimation(fadeIn);
-                        if(!orderFadeIn.hasEnded() || fadeOutPreventOrder.hasEnded())
-                            btnPlaceOrder.startAnimation(orderFadeIn);
+                        Button btnOrder = (Button)findViewById(R.id.btnOrder);
+                        Button btnCancel = (Button)findViewById(R.id.btnCancel);
+                        btnOrder.setVisibility(View.VISIBLE);
+                        btnCancel.setVisibility(View.VISIBLE);
                     }});
         }
 
@@ -245,7 +264,6 @@ public class DrinkList extends AppCompatActivity {
 
     //Sends and receives a message
     private class OrderDrinkPut extends AsyncTask<String, Void, String> {
-
 
         @Override
         protected String doInBackground(String... stringArray){ //theURL is the parameter connectionString from cts.execute
@@ -302,9 +320,11 @@ public class DrinkList extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result){
             if (!result.isEmpty()) {
-                TextView tv = (TextView)findViewById(R.id.txtDrinkOrder);
-                tv.setText("Success");
-                tv.startAnimation(fadeOut);
+                TextView tvID = (TextView)findViewById(R.id.txtDrinkOrder);
+                tvID.setText("");
+                TextView tvSuccess = (TextView)findViewById(R.id.txtSuccess);
+                tvSuccess.startAnimation(fadeOut);
+                tvSuccess.setVisibility(View.VISIBLE);
             }
         }
     }

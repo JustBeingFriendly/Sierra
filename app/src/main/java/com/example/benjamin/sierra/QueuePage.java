@@ -1,6 +1,5 @@
 package com.example.benjamin.sierra;
 
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,7 +22,7 @@ import java.net.URL;
 
 public class QueuePage extends AppCompatActivity {
 
-    final String drinkQueueURL = "http://192.168.0.107:8081/queue";
+    final String drinkQueueURL = "http://192.168.0.107:8081/getQueue";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +76,6 @@ public class QueuePage extends AppCompatActivity {
                 JSONObject jObj = new JSONObject();
                 jObj.put("UserID", "Mr_Android");
 
-
                 try{
                     DataOutputStream dOutStream = new DataOutputStream(httpConnect.getOutputStream());
                     dOutStream.writeBytes(jObj.toString());
@@ -99,7 +97,6 @@ public class QueuePage extends AppCompatActivity {
                     strToReturn = sb.toString(); //Cast the stringbuilder to a string
                     sb.setLength(0);
                     is.close(); //Close the InputStream
-
                 }
                 catch (Exception e){
                     Log.e("DAMMIT", "WE has an error", e);
@@ -127,29 +124,56 @@ public class QueuePage extends AppCompatActivity {
     protected void cleanOutputFromListOfDrinks(String listOfDrinks){
         StringBuilder sb = new StringBuilder(listOfDrinks);
 
-        int i = sb.indexOf("[");
-        sb.deleteCharAt(i);
-        i = sb.indexOf("]");
-        sb.deleteCharAt(i);
-        i = sb.indexOf("\"");
+        int k = sb.indexOf("[");
 
-        while (i != -1){
-            sb.deleteCharAt(i);
-            i = sb.indexOf("\"");
+        while (k != -1){
+            sb.deleteCharAt(k);
+            k = sb.indexOf("[");
         }
-        listOfDrinks = sb.toString();
+        k = sb.indexOf("]");
+        while (k != -1){
+            sb.deleteCharAt(k);
+            k = sb.indexOf("]");
+        }
 
-        String[] drinks = listOfDrinks.split(",");
-        createListView(drinks);
+        k = sb.indexOf("\"");
+        while (k != -1){
+            sb.deleteCharAt(k);
+            k = sb.indexOf("\"");
+        }
+        k = sb.indexOf("\"");
+        while (k != -1){
+            sb.deleteCharAt(k);
+            k = sb.indexOf("\"");
+        }
+
+
+        String[] queueList = sb.toString().split(",");
+        String[][] drinksList = new String[queueList.length / 2][2];
+
+        int h = 0;//queueList.length;
+
+        for(int i = 0; i < drinksList.length; i++) {
+                drinksList[i][0] = queueList[h];
+                h++;
+                drinksList[i][1] = "OrderID : " + queueList[h];
+                h++;
+        }
+
+        String[] revisedList = new String[drinksList.length];
+
+        for(int i = 0; i < revisedList.length; i++){
+            revisedList[i] = drinksList[i][0] + "  |  " + drinksList[i][1];
+        }
+
+        createListView(revisedList);
         //placeOrderText.setText("");
     }
 
     private void createListView(String[] drinks){
 
         ListView lv = (ListView) findViewById(R.id.lvQueue);
-        lv.setBackgroundColor(Color.YELLOW);
-
-        ArrayAdapter<String> adaptor = new ArrayAdapter<String>(
+        ArrayAdapter<String> adaptor = new ArrayAdapter<>(
                 this,
                 R.layout.listviewlayout,
                 drinks);
