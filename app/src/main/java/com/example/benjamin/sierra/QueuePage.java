@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.DataOutputStream;
@@ -22,7 +23,7 @@ import java.net.URL;
 
 public class QueuePage extends AppCompatActivity {
 
-    final String drinkQueueURL = "http://192.168.0.107:8081/getQueue";
+    final private String LANAddress = "http://192.168.0.107:8081";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,10 +55,10 @@ public class QueuePage extends AppCompatActivity {
     }
 
     private void getRemoteQueue(){
+        final String drinkQueueURL = LANAddress + "/getQueue";
         GetQueuePut getTheQueue = new GetQueuePut();
         getTheQueue.execute(drinkQueueURL);
     }
-
 
     //Sends and receives a message
     private class GetQueuePut extends AsyncTask<String, Void, String> {
@@ -68,7 +69,6 @@ public class QueuePage extends AppCompatActivity {
             try {
                 URL url = new URL(stringArray[0]); //the method is expecting an array, as there is only one parameter passed we can set it to the first entry in the array 0
                 HttpURLConnection httpConnect = (HttpURLConnection) url.openConnection();
-
                 httpConnect.setRequestMethod("PUT");
                 httpConnect.setDoOutput(true);
                 httpConnect.setRequestProperty("Content-Type", "application/json");
@@ -121,53 +121,29 @@ public class QueuePage extends AppCompatActivity {
         }
     }
 
-    protected void cleanOutputFromListOfDrinks(String listOfDrinks){
-        StringBuilder sb = new StringBuilder(listOfDrinks);
+    private void cleanOutputFromListOfDrinks(String listOfDrinks){
 
-        int k = sb.indexOf("[");
-
-        while (k != -1){
-            sb.deleteCharAt(k);
-            k = sb.indexOf("[");
-        }
-        k = sb.indexOf("]");
-        while (k != -1){
-            sb.deleteCharAt(k);
-            k = sb.indexOf("]");
-        }
-
-        k = sb.indexOf("\"");
-        while (k != -1){
-            sb.deleteCharAt(k);
-            k = sb.indexOf("\"");
-        }
-        k = sb.indexOf("\"");
-        while (k != -1){
-            sb.deleteCharAt(k);
-            k = sb.indexOf("\"");
+        StringBuilder sb = new StringBuilder();
+        try {
+            JSONArray jArray = new JSONArray(listOfDrinks);
+            JSONObject jObject;
+            for (int i=0; i < jArray.length(); i++){
+                jObject = jArray.getJSONObject(i);
+                sb.append("\n");
+                sb.append(jObject.getString("Drink"));
+                sb.append("\n\n OrderID: ");
+                sb.append(jObject.getString("OrderID"));
+                sb.append("\n,");
+            }
+        }catch (Exception e){
+            Log.e("JSON ERRORZ", "Cannot array", e);
         }
 
+        //listOfDrinks = listOfDrinks.replaceAll("[\\[|\\]|\"]", "");
 
         String[] queueList = sb.toString().split(",");
-        String[][] drinksList = new String[queueList.length / 2][2];
 
-        int h = 0;//queueList.length;
-
-        for(int i = 0; i < drinksList.length; i++) {
-                drinksList[i][0] = queueList[h];
-                h++;
-                drinksList[i][1] = "OrderID : " + queueList[h];
-                h++;
-        }
-
-        String[] revisedList = new String[drinksList.length];
-
-        for(int i = 0; i < revisedList.length; i++){
-            revisedList[i] = drinksList[i][0] + "  |  " + drinksList[i][1];
-        }
-
-        createListView(revisedList);
-        //placeOrderText.setText("");
+        createListView(queueList);
     }
 
     private void createListView(String[] drinks){
@@ -188,7 +164,7 @@ public class QueuePage extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View viewClicked, int position, long id) {
                 TextView tv = (TextView) viewClicked;
-                String str = tv.getText().toString();
+                String str = tv.getText().toString().replaceAll("[\n]", "");
                 TextView tvOutput = (TextView) findViewById(R.id.txtLvSelect);
                 tvOutput.setText(str);
             }

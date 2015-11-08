@@ -4,6 +4,11 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:minHeight="?android:attr/listPreferredItemHeight" />
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:textColor="#FFFFFF"
+    android:shadowColor="#000000"
+    android:shadowDx="0.0"
+    android:shadowDy="0.0"
+    android:shadowRadius="10.0"/>
 
 

@@ -13,6 +13,7 @@ import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
@@ -24,10 +25,9 @@ import java.net.URL;
 
 public class DrinkList extends AppCompatActivity {
 
-    final String drinksListURL = "http://192.168.0.107:8081/drinksList";
-    final String orderDrinkURL = "http://192.168.0.107:8081/chooseDrink";
+    final private String LANAddress = "http://192.168.0.107:8081";
 
-    protected Animation fadeIn, fadeOut, fadeInOut;//, fadeOutPreventOrder, orderFadeIn;
+    private Animation fadeIn, fadeOut;//fadeInOut, fadeOutPreventOrder, orderFadeIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,15 +35,16 @@ public class DrinkList extends AppCompatActivity {
         setContentView(R.layout.activity_drinklist);
 
         GetListOfDrinks getListOfDrinks = new GetListOfDrinks();
+        final String drinksListURL = LANAddress + "/drinksList";
         getListOfDrinks.execute(drinksListURL);
         setAnimationParameters();
 
         TextView tvSuccess = (TextView)findViewById(R.id.txtSuccess);
-        tvSuccess.setVisibility(View.GONE);
+        tvSuccess.startAnimation(fadeOut);
         Button btnOrder = (Button)findViewById(R.id.btnOrder);
         Button btnCancel = (Button)findViewById(R.id.btnCancel);
-        btnOrder.setVisibility(View.GONE);
-        btnCancel.setVisibility(View.GONE);
+        btnOrder.startAnimation(fadeOut);
+        btnCancel.startAnimation(fadeOut);
     }
 
     @Override
@@ -75,31 +76,10 @@ public class DrinkList extends AppCompatActivity {
         fadeIn = new AlphaAnimation(0.0f, 1.0f);
         fadeIn.setDuration(400);
         fadeIn.setFillAfter(true);
-
-        fadeInOut = new AlphaAnimation(0.0f, 1.0f);
-        fadeInOut.setDuration(1000);
-        fadeInOut.setFillAfter(true);
-        fadeInOut.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                TextView tvSuccess = (TextView)findViewById(R.id.txtSuccess);
-                tvSuccess.startAnimation(fadeOut);
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
     }
 
     //Sends a get request to the web server which returns the list of drinks in the database
-    protected class GetListOfDrinks extends AsyncTask<String, Void, String> {
+    private class GetListOfDrinks extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... theURL){ //theURL is the parameter connectionString from cts.execute
@@ -145,56 +125,36 @@ public class DrinkList extends AppCompatActivity {
     }
 
     //Removes the JSON encoding from the string
-    protected void cleanOutputFromListOfDrinks(String listOfDrinks){
-        StringBuilder sb = new StringBuilder(listOfDrinks);
-
-        int i = sb.indexOf("[");
-        sb.deleteCharAt(i);
-        i = sb.indexOf("]");
-        sb.deleteCharAt(i);
-        i = sb.indexOf("\"");
-
-        while (i != -1){
-            sb.deleteCharAt(i);
-            i = sb.indexOf("\"");
+    private void cleanOutputFromListOfDrinks(String listOfDrinks){
+        StringBuilder sb = new StringBuilder();
+        try {
+            JSONArray jArray = new JSONArray(listOfDrinks);
+            JSONObject jObject;
+            for (int i=0; i < jArray.length(); i++){
+                jObject = jArray.getJSONObject(i);
+                sb.append(jObject.getString("DrinkName"));
+                sb.append(",");
+            }
+        }catch (Exception e){
+            Log.e("JSON ERRORZ", "Cannot array", e);
         }
-        listOfDrinks = sb.toString();
 
-        String[] drinks = listOfDrinks.split(",");
+        String[] drinks = sb.toString().split(",");
         initialiseViews(drinks);
     }
 
     //Adds text from remote database and action listeners to buttons
     private void initialiseViews(final String[] drinkNames){
 
-        final TextView tv = (TextView) findViewById(R.id.txtDrinkOrder);
+        final TextView tvDrinkOrder = (TextView) findViewById(R.id.txtDrinkOrder);
 
         final Button btnCancel = (Button)findViewById(R.id.btnCancel);
         btnCancel.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 Button btnOrder = (Button)findViewById(R.id.btnOrder);
-                btnOrder.setVisibility(View.GONE);
-                btnCancel.setVisibility(View.GONE);
-                tv.setText("");
-                /*fadeOutPreventOrder.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        tv.setText("");
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });*/
-                /*if(fadeOutPreventOrder.hasEnded() || !fadeOutPreventOrder.hasStarted())
-                    tv.startAnimation(fadeOutPreventOrder);*/
-
+                btnOrder.startAnimation(fadeOut);
+                btnCancel.startAnimation(fadeOut);
+                tvDrinkOrder.setText("");
             }
         });
 
@@ -206,8 +166,9 @@ public class DrinkList extends AppCompatActivity {
         final Button btnOrder = (Button)findViewById(R.id.btnOrder);
         btnOrder.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-                btnOrder.setVisibility(View.GONE);
-                btnCancel.setVisibility(View.GONE);
+                tvDrinkOrder.startAnimation(fadeOut);
+                btnOrder.startAnimation(fadeOut);
+                btnCancel.startAnimation(fadeOut);
                 commitOrder();
             }
         });
@@ -229,29 +190,36 @@ public class DrinkList extends AppCompatActivity {
             b.setOnClickListener(
                new Button.OnClickListener() {
                     public void onClick(View v) {
-                        tv.setText(b.getText().toString());
+                        tvDrinkOrder.setText(b.getText().toString());
+                        tvDrinkOrder.startAnimation(fadeIn);
                         Button btnOrder = (Button)findViewById(R.id.btnOrder);
                         Button btnCancel = (Button)findViewById(R.id.btnCancel);
-                        btnOrder.setVisibility(View.VISIBLE);
-                        btnCancel.setVisibility(View.VISIBLE);
+                        float alp =  btnOrder.getAlpha();
+                        btnOrder.startAnimation(fadeIn);
+                        btnCancel.startAnimation(fadeIn);
+                        if(alp == 0.0f){
+                            btnOrder.startAnimation(fadeIn);
+                            btnCancel.startAnimation(fadeIn);
+                        }
                     }});
         }
 
 
-        tv.setText("");
 
+        tvDrinkOrder.setText("");
 
 
     }
 
     private void commitOrder(){
-        TextView tv = (TextView) findViewById(R.id.txtDrinkOrder);
-        final String drinkToOrder =  tv.getText().toString();
+        TextView tvDrinkOrder = (TextView) findViewById(R.id.txtDrinkOrder);
+        final String orderDrinkURL = LANAddress + "/chooseDrink";
+        final String drinkToOrder =  tvDrinkOrder.getText().toString();
         final String id = "Mr_Android";
         final String[] strArr = {orderDrinkURL, id, drinkToOrder};
         OrderDrinkPut orderDrink;
 
-        if(tv.getText() != ""){
+        if(tvDrinkOrder.getText() != ""){
             try {
                 orderDrink = new OrderDrinkPut();
                 orderDrink.execute(strArr);
@@ -260,6 +228,7 @@ public class DrinkList extends AppCompatActivity {
                 Log.e("Uh oh", "WE has an error", e);
             }
         }
+
     }
 
     //Sends and receives a message
@@ -320,13 +289,14 @@ public class DrinkList extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result){
             if (!result.isEmpty()) {
-                TextView tvID = (TextView)findViewById(R.id.txtDrinkOrder);
-                tvID.setText("");
+                TextView tvDrinkOrder = (TextView)findViewById(R.id.txtDrinkOrder);
                 TextView tvSuccess = (TextView)findViewById(R.id.txtSuccess);
+                tvSuccess.setText(tvDrinkOrder.getText().toString() + " Order Successful");
                 tvSuccess.startAnimation(fadeOut);
                 tvSuccess.setVisibility(View.VISIBLE);
+
+                tvDrinkOrder.setText("");
             }
         }
     }
-
 }
