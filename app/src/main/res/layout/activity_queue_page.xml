@@ -12,12 +12,13 @@
     <Button
         android:layout_width="150dp"
         android:layout_height="60dp"
-        android:text="@string/cancel_button"
-        android:id="@+id/cancel_button"
+        android:text="@string/YesCancelQueue"
+        android:id="@+id/btnCancelQueueYes"
         android:background="@drawable/drinkbg"
-        android:layout_marginBottom="28dp"
+        android:layout_marginBottom="36dp"
+        android:layout_marginLeft="10dp"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignStart="@+id/queue_select" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -25,8 +26,9 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/drink_cancel"
         android:id="@+id/txtLvSelect"
-        android:layout_above="@+id/cancel_button"
-        android:layout_centerHorizontal="true" />
+        android:layout_above="@+id/btnCancelQueueYes"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="22dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -64,5 +66,14 @@
         android:headerDividersEnabled="false"
         android:layout_alignParentLeft="false"
         android:layout_alignParentStart="false" />
+
+    <Button
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        android:text="@string/NoCancelQueue"
+        android:id="@+id/btnCancelQueueNo"
+        android:background="@drawable/drinkbg"
+        android:layout_alignTop="@+id/btnCancelQueueYes"
+        android:layout_alignEnd="@+id/queue_select" />
 
 </RelativeLayout>

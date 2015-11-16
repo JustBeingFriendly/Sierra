@@ -80,7 +80,7 @@
         android:layout_width="200dp"
         android:layout_height="80dp"
         android:text="@string/OrderDrink"
-        android:id="@+id/btnOrder"
+        android:id="@+id/btnPlaceOrder"
         android:background="@drawable/drinkbg"
         android:layout_marginTop="86dp"
         android:layout_below="@+id/btnDrink5"
@@ -101,11 +101,11 @@
         android:layout_width="200dp"
         android:layout_height="80dp"
         android:text="@string/CancelDrink"
-        android:id="@+id/btnCancel"
+        android:id="@+id/btnCancelOrder"
         android:background="@drawable/drinkbg"
-        android:layout_alignTop="@+id/btnOrder"
-        android:layout_toRightOf="@+id/btnOrder"
-        android:layout_toEndOf="@+id/btnOrder" />
+        android:layout_alignTop="@+id/btnPlaceOrder"
+        android:layout_toRightOf="@+id/btnPlaceOrder"
+        android:layout_toEndOf="@+id/btnPlaceOrder" />
 
     <TextView
         android:layout_width="wrap_content"

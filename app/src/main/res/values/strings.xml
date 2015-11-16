@@ -18,5 +18,7 @@
     <string name="queue_welcome">This is your drink queue</string>
     <string name="queue_select">Select a drink to cancel it from the queue</string>
     <string name="Success">Success</string>
+    <string name="YesCancelQueue">Yes</string>
+    <string name="NoCancelQueue">No</string>
 
 </resources>

@@ -15,9 +15,10 @@
         android:text="@string/make_drink"
         android:id="@+id/make_drink"
         android:background="@drawable/buttonbg"
-        android:layout_above="@+id/queue"
-        android:layout_centerHorizontal="true"
-        android:textColor="#ffffff" />
+        android:textColor="#ffffff"
+        android:layout_marginTop="97dp"
+        android:layout_below="@+id/front_instruct"
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="200dp"
@@ -25,10 +26,10 @@
         android:id="@+id/queue"
         android:background="@drawable/buttonbg"
         android:text="@string/queue"
-        android:layout_alignParentBottom="true"
-        android:layout_alignLeft="@+id/make_drink"
+        android:textColor="#ffffff"
+        android:layout_below="@+id/make_drink"
         android:layout_alignStart="@+id/make_drink"
-        android:textColor="#ffffff" />
+        android:layout_marginTop="31dp" />
 
     <ImageView
         android:layout_width="125dp"
