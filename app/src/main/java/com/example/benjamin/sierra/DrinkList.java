@@ -28,15 +28,21 @@ public class DrinkList extends AppCompatActivity {
     final private String LANAddress = "http://192.168.0.107:8081";
     private View[] orderingViews;
     private Animation txtVwFadeIn, txtVwFadeOut, orderingFadeIn, orderingFadeOut;//fadeInOut, fadeOutPreventOrder, orderFadeIn;
+    private String[] drinkNames;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drinklist);
-
-        GetListOfDrinks getListOfDrinks = new GetListOfDrinks();
-        final String drinksListURL = LANAddress + "/drinksList";
-        getListOfDrinks.execute(drinksListURL);
+        try{
+            if(drinkNames.length < 0) {
+                initialiseViews(drinkNames);
+            }
+        }catch (NullPointerException n){
+            GetListOfDrinks getListOfDrinks = new GetListOfDrinks();
+            final String drinksListURL = LANAddress + "/drinksList";
+            getListOfDrinks.execute(drinksListURL);
+        }
         setAnimationParameters();
 
         TextView tvSuccess = (TextView)findViewById(R.id.txtSuccess);
@@ -153,12 +159,12 @@ public class DrinkList extends AppCompatActivity {
             Log.e("JSON ERRORZ", "Cannot array", e);
         }
 
-        String[] drinks = sb.toString().split(",");
-        initialiseViews(drinks);
+        final String[] drinkNames = sb.toString().split(",");
+        initialiseViews(drinkNames);
     }
 
     //Adds text from remote database and action listeners to buttons
-    private void initialiseViews(final String[] drinkNames){
+    private void initialiseViews(String[] drinkNames){
 
         final TextView tvDrinkOrder = (TextView) findViewById(R.id.txtDrinkOrder);
 

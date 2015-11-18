@@ -1,5 +1,7 @@
 package com.example.benjamin.sierra;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -202,7 +204,7 @@ public class QueuePage extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View viewClicked, int position, long id) {
                 TextView tv = (TextView) viewClicked;
                 String orderInfo = tv.getText().toString().replaceAll("[\n]", "");
-                if(orderInfo.equals(""))
+                if(!orderInfo.equals(""))
                     enableCancelControls();
                 TextView txtSelect = (TextView) findViewById(R.id.txtLvSelect);
                 txtSelect.setText("Cancel " + orderInfo + "?");
@@ -241,6 +243,8 @@ public class QueuePage extends AppCompatActivity {
         CancelDrinkAsyncTask cancelAsyncTask = new CancelDrinkAsyncTask();
         final String[] stringArr = {cancelDrinkURL, orderID};
         cancelAsyncTask.execute(stringArr);
+        NotificationManager nm = (NotificationManager)this.getSystemService(Context.NOTIFICATION_SERVICE);
+        nm.cancelAll();
     }
 
     private class CancelDrinkAsyncTask extends AsyncTask<String, Void, String> {
