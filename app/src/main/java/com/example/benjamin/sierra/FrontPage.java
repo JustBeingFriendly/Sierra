@@ -16,6 +16,7 @@ import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import org.json.JSONObject;
 
@@ -28,17 +29,17 @@ import java.net.URL;
 
 public class FrontPage extends AppCompatActivity {
 
+    final private String LANAddress = "http://192.168.0.107:8888";
+    final private String ClientID = "Mr_Android";
     private int notificationID = 0;
     private NotificationManager nMananger = null;
-    final private String LANAddress = "http://192.168.0.107:8081";
     private NotificationCompat.Builder notificationBuilder;
     private Button btnPour;
-
-    //private Button btnPour;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_front_page);
         btnPour = (Button)findViewById(R.id.btnPour);
         notificationBuilder = new NotificationCompat.Builder(this);
@@ -47,13 +48,17 @@ public class FrontPage extends AppCompatActivity {
 
         if(notificationID != 0)
             enablePourButton();
-        else
+        else {
             disablePourButton();
+            getFirstInQueue();
+        }
 
         makedrink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent drinklistintent = new Intent(FrontPage.this, DrinkList.class);
+                drinklistintent.putExtra("LANAddress", LANAddress);
+                drinklistintent.putExtra("ClientID", ClientID);
                 startActivity(drinklistintent);
             }
         });
@@ -64,6 +69,8 @@ public class FrontPage extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent queueintent = new Intent(FrontPage.this, QueuePage.class);
+                queueintent.putExtra("LANAddress", LANAddress);
+                queueintent.putExtra("ClientID", ClientID);
                 startActivity(queueintent);
             }
         });
@@ -81,7 +88,7 @@ public class FrontPage extends AppCompatActivity {
 
 
     private void CountDown(){
-        new CountDownTimer(10000, 1000) {
+        new CountDownTimer(5000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                     int num = (int) millisUntilFinished / 1000;
@@ -107,8 +114,7 @@ public class FrontPage extends AppCompatActivity {
 
     private void createNotification(String nameOfDrink){
         Intent intent = new Intent(this, FrontPage.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
         notificationBuilder.setContentIntent(pIntent);
         notificationBuilder.setContentTitle("Drink Mixer");
@@ -123,22 +129,31 @@ public class FrontPage extends AppCompatActivity {
     private void performNotification(int orderID){
         Notification notification = notificationBuilder.build();
         nMananger = (NotificationManager)this.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        /*if (notificationID != 0) {
+            nMananger.notify(orderID, notification);
+        }*/
         nMananger.notify(orderID, notification);
         notificationID = orderID;
         enablePourButton();
-
-
 
     }
 
     private void disablePourButton(){
         btnPour.setEnabled(false);
         btnPour.setAlpha(0.0f);
+
+        TextView txtToPour = (TextView) findViewById(R.id.txtDrinkReadyToPour);
+        txtToPour.setAlpha(0.0f);
     }
 
     private void enablePourButton() {
         btnPour.setEnabled(true);
         btnPour.setAlpha(1.0f);
+
+        TextView txtToPour = (TextView) findViewById(R.id.txtDrinkReadyToPour);
+        txtToPour.setAlpha(1.0f);
+
     }
 
     private class GetFirstInQueueAsyncTask extends AsyncTask<String, Void, String> {
@@ -155,7 +170,7 @@ public class FrontPage extends AppCompatActivity {
                 httpConnect.setRequestProperty("Content-Type", "application/json");
 
                 JSONObject jObj = new JSONObject();
-                jObj.put("UserID", "Mr_Android");
+                jObj.put("UserID", ClientID);
 
                 try{
                     DataOutputStream dOutStream = new DataOutputStream(httpConnect.getOutputStream());
@@ -216,19 +231,28 @@ public class FrontPage extends AppCompatActivity {
             Log.e("JSON ERRORZ", "Cannot Parse JSON", e);
         }
 
-        if (UserID.equals("Mr_Android")) {
+        if (UserID.equals(ClientID)) {
             createNotification(drinkName);
             if (notificationID != orderID) {
                 performNotification(orderID);
+                //TextView txtToPour = (TextView) findViewById(R.id.txtDrinkReadyToPour);
+                //txtToPour.setText(drinkName + " Ready to Pour");
+                Button btnPour = (Button)findViewById(R.id.btnPour);
+                btnPour.setText(drinkName + "\nPress to Pour");
             }
+        }else {
+            nMananger.cancelAll();
+            disablePourButton();
         }
     }
 
     private void beginToPour(){
+        disablePourButton();
+        nMananger.cancel(notificationID);
         final String pourDrinkURL = LANAddress +"/pourDrink";
         PourDrinkAsyncTask pourTheDrink = new PourDrinkAsyncTask();
         pourTheDrink.execute(pourDrinkURL);
-        disablePourButton();
+
     }
 
     private class PourDrinkAsyncTask extends AsyncTask<String, Void, String> {
@@ -287,7 +311,6 @@ public class FrontPage extends AppCompatActivity {
         protected void onPostExecute(String result){
             if (!result.isEmpty()) {
                 parseJSONFromPourDrinkAsyncTask(result);
-                nMananger.cancel(notificationID);
             }
         }
     }

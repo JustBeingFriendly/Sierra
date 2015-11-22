@@ -1,7 +1,9 @@
 package com.example.benjamin.sierra;
 
 
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.app.BundleCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,7 +27,8 @@ import java.net.URL;
 
 public class DrinkList extends AppCompatActivity {
 
-    final private String LANAddress = "http://192.168.0.107:8081";
+    private String LANAddress;
+    private String ClientID;
     private View[] orderingViews;
     private Animation txtVwFadeIn, txtVwFadeOut, orderingFadeIn, orderingFadeOut;//fadeInOut, fadeOutPreventOrder, orderFadeIn;
     private String[] drinkNames;
@@ -34,6 +37,9 @@ public class DrinkList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drinklist);
+        Bundle extra = getIntent().getExtras();
+        LANAddress = extra.getString("LANAddress");
+        ClientID = extra.getString("ClientID");
         try{
             if(drinkNames.length < 0) {
                 initialiseViews(drinkNames);
@@ -242,8 +248,7 @@ public class DrinkList extends AppCompatActivity {
         TextView tvDrinkOrder = (TextView) findViewById(R.id.txtDrinkOrder);
         final String orderDrinkURL = LANAddress + "/chooseDrink";
         final String drinkToOrder =  tvDrinkOrder.getText().toString();
-        final String id = "Mr_Android";
-        final String[] strArr = {orderDrinkURL, id, drinkToOrder};
+        final String[] strArr = {orderDrinkURL, ClientID, drinkToOrder};
         OrderDrinkAsyncTask orderDrink;
 
         if(tvDrinkOrder.getText() != ""){

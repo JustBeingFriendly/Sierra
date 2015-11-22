@@ -28,14 +28,17 @@ import java.net.URL;
 
 public class QueuePage extends AppCompatActivity {
 
-    final private String LANAddress = "http://192.168.0.107:8081";
+    private String LANAddress;
+    private String ClientID;
     private View[] cancelingViews;
     private Animation txtVwfadeIn, txtVwfadeOut, cancelingFadeIn, cancelingFadeOut;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_queue_page);
-
+        Bundle extra = getIntent().getExtras();
+        LANAddress = extra.getString("LANAddress");
+        ClientID = extra.getString("ClientID");
         getQueue();
 
         cancelingViews = new View[]{
@@ -113,7 +116,7 @@ public class QueuePage extends AppCompatActivity {
                 httpConnect.setRequestProperty("Content-Type", "application/json");
 
                 JSONObject jObj = new JSONObject();
-                jObj.put("UserID", "Mr_Android");
+                jObj.put("UserID", ClientID);
 
                 try{
                     DataOutputStream dOutStream = new DataOutputStream(httpConnect.getOutputStream());

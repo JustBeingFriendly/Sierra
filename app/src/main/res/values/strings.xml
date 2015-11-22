@@ -2,7 +2,7 @@
     <string name="app_name">Sierra</string>
 
     <string name="action_settings">Settings</string>
-    <string name="make_drink">Make Drink</string>
+    <string name="make_drink">Order Drink</string>
     <string name="queue">My Queue</string>
     <string name="frontimage">Main page image</string>
     <string name="welcome">Welcome to Drink Mixer</string>
