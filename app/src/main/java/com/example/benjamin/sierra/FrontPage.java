@@ -241,7 +241,12 @@ public class FrontPage extends AppCompatActivity {
                 btnPour.setText(drinkName + "\nPress to Pour");
             }
         }else {
-            nMananger.cancelAll();
+            try {
+                nMananger.cancelAll();
+            }
+            catch (NullPointerException e){
+                Log.e("NotificationMan Error", "This always does this on new launch, so chill", e);
+            }
             disablePourButton();
         }
     }
